@@ -16,10 +16,12 @@ import java.time.Duration;
 
 @Controller
 public class ProductoController {
+
     @Autowired
     private ProductoDao productoDao;
 
     private static final Logger log = LoggerFactory.getLogger(ProductoController.class);
+
     @GetMapping({"/", "/listar"})
     public String listar(Model model) {
         Flux<Producto> productos = productoDao.findAll().map(producto -> {
