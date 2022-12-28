@@ -41,7 +41,7 @@ public class SpringBootWebfluxApplication implements CommandLineRunner {
 				)
 				.flatMap(producto -> {
 					producto.setCreateAt(new Date());
-					return productoDao.save(producto); 
+					return productoDao.save(producto);
 				})
 				.subscribe( producto -> log.info("Insert: " + producto.getId() + " "+ producto.getNombre()));
 	}
