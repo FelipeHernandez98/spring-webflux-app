@@ -9,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
@@ -34,7 +37,30 @@ public class ProductoController {
         return "listar";
     }
 
-    
+    @GetMapping("/form")
+    public Mono<String> crear(Model model){
+        model.addAttribute("producto", new Producto());
+        model.addAttribute("titulo", "Formulario de producto");
+
+        return Mono.just("form");
+    }
+
+    @GetMapping("/form/{id}")
+    public Mono<String> editar(@PathVariable String id, Model model){
+        Mono<Producto> productoMono = service.findById(id).doOnNext(p -> {
+            log.info("Producto: " + p.getNombre());
+        });
+
+        model.addAttribute("titulo", "Editar producto");
+        model.addAttribute("producto", productoMono);
+
+        return Mono.just("form");
+    }
+
+    @PostMapping("/form")
+    public Mono<String> guardar(Producto producto){
+        return service.save(producto).thenReturn("redirect:/listar");
+    }
     @GetMapping("/listar-datadriver")
     public String listarDataDriver(Model model) {
         Flux<Producto> productos = service.findAllConNombreUpperCase().delayElements(Duration.ofSeconds(1));
