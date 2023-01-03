@@ -4,6 +4,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Document(collection = "productos")
@@ -11,9 +13,13 @@ public class Producto {
     @Id
     private String id;
 
+    @NotEmpty
     private String nombre;
 
+    @NotNull
     private Double precio;
+
+    private Categoria categoria;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date createAt;
@@ -29,6 +35,11 @@ public class Producto {
     public Producto(String nombre, Double precio) {
         this.nombre = nombre;
         this.precio = precio;
+    }
+
+    public Producto(String nombre, Double precio, Categoria categoria) {
+        this(nombre, precio);
+        this.categoria = categoria;
     }
 
     public void setId(String id) {
@@ -57,5 +68,13 @@ public class Producto {
 
     public void setCreateAt(Date createAt) {
         this.createAt = createAt;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
     }
 }

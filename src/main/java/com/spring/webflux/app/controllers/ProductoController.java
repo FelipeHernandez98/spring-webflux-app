@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,7 @@ import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
 import java.time.Duration;
 
 
@@ -49,7 +51,13 @@ public class ProductoController {
     public Mono<String> editar(@PathVariable String id, Model model){
         Mono<Producto> productoMono = service.findById(id).doOnNext(p -> {
             log.info("Producto: " + p.getNombre());
-        });
+        }).defaultIfEmpty(new Producto())
+                .flatMap(p -> {
+                    if(p.getId() == null){
+                        return Mono.error(new InterruptedException("No existe el producto"));
+                    }
+                    return Mono.just(p);
+                });
 
         model.addAttribute("titulo", "Editar producto");
         model.addAttribute("producto", productoMono);
@@ -58,7 +66,12 @@ public class ProductoController {
     }
 
     @PostMapping("/form")
-    public Mono<String> guardar(Producto producto){
+    public Mono<String> guardar(@Valid  Producto producto, BindingResult result){
+        if(result.hasErrors()){
+
+        } else {
+
+        }
         return service.save(producto).thenReturn("redirect:/listar");
     }
     @GetMapping("/listar-datadriver")
